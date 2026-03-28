@@ -4,9 +4,13 @@ import { ConvexHttpClient } from 'convex/browser'
 import { api } from '../../../../convex/_generated/api'
 import { buildPrompt } from '@/lib/constants'
 
+export const maxDuration = 60;
+
 export async function POST(request) {
   try {
     const { dishId, groupId } = await request.json()
+    const reqUrl = new URL(request.url)
+    const origin = reqUrl.origin
 
     const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL)
 
@@ -61,47 +65,50 @@ export async function POST(request) {
     if (dish.vesselImage) {
       const vesselPath = getAssetPath('vessel', dish.vesselType, dish.vesselImage)
       if (vesselPath) {
-        const fs = await import('fs/promises')
-        const path = await import('path')
-        const fullPath = path.join(process.cwd(), 'public', vesselPath)
         try {
-          const imgBuffer = await fs.readFile(fullPath)
-          const base64 = imgBuffer.toString('base64')
-          parts.push({
-            inlineData: { mimeType: 'image/jpeg', data: base64 },
-          })
+          const imgResponse = await fetch(`${origin}${vesselPath}`)
+          if (imgResponse.ok) {
+            const imgBuffer = await imgResponse.arrayBuffer()
+            const base64 = Buffer.from(imgBuffer).toString('base64')
+            parts.push({
+              inlineData: { mimeType: 'image/jpeg', data: base64 },
+            })
+          }
         } catch (e) {
+          console.error("Vessel fetch error:", e)
         }
       }
     }
 
     if (group.surfaceImage) {
       const surfacePath = `/assets/tablecloths/${group.surfaceImage}.jpeg`
-      const fs = await import('fs/promises')
-      const path = await import('path')
-      const fullPath = path.join(process.cwd(), 'public', surfacePath)
       try {
-        const imgBuffer = await fs.readFile(fullPath)
-        const base64 = imgBuffer.toString('base64')
-        parts.push({
-          inlineData: { mimeType: 'image/jpeg', data: base64 },
-        })
+        const imgResponse = await fetch(`${origin}${surfacePath}`)
+        if (imgResponse.ok) {
+          const imgBuffer = await imgResponse.arrayBuffer()
+          const base64 = Buffer.from(imgBuffer).toString('base64')
+          parts.push({
+            inlineData: { mimeType: 'image/jpeg', data: base64 },
+          })
+        }
       } catch (e) {
+        console.error("Surface fetch error:", e)
       }
     }
 
     if (dish.hasCutlery && dish.cutleryStyleImage) {
       const cutleryPath = `/assets/cutleries/${dish.cutleryStyleImage}.jpeg`
-      const fs = await import('fs/promises')
-      const path = await import('path')
-      const fullPath = path.join(process.cwd(), 'public', cutleryPath)
       try {
-        const imgBuffer = await fs.readFile(fullPath)
-        const base64 = imgBuffer.toString('base64')
-        parts.push({
-          inlineData: { mimeType: 'image/jpeg', data: base64 },
-        })
+        const imgResponse = await fetch(`${origin}${cutleryPath}`)
+        if (imgResponse.ok) {
+          const imgBuffer = await imgResponse.arrayBuffer()
+          const base64 = Buffer.from(imgBuffer).toString('base64')
+          parts.push({
+            inlineData: { mimeType: 'image/jpeg', data: base64 },
+          })
+        }
       } catch (e) {
+        console.error("Cutlery fetch error:", e)
       }
     }
 
