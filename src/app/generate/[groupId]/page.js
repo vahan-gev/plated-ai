@@ -139,10 +139,11 @@ export default function GroupPage({ params }) {
           })
 
           if (!response.ok) {
-            throw new Error('Generation failed')
+            const errData = await response.json().catch(() => ({}))
+            throw new Error(errData.error || 'Generation failed')
           }
         } catch (err) {
-          toast.error(`Failed to generate image for dish ${dish.order + 1}`)
+          toast.error(`Error (Dish ${dish.order + 1}): ${err.message}`)
         }
       }
 

@@ -41,3 +41,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to experience the application.
+
+
+## Credits
+
+- All the plates, bowls, glasses, cutleries, table cloths, props, etc. are from https://www.crateandbarrel.com/

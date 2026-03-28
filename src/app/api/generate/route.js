@@ -117,7 +117,6 @@ export async function POST(request) {
       contents: [{ role: 'user', parts }],
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
-        aspectRatio: group.aspectRatio || "1:1",
       },
     })
 
