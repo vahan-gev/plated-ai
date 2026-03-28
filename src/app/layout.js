@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "PlatedAI — Professional Menu Photography",
+  title: "PlatedAI - Professional Menu Photography",
   description:
     "Generate stunning, professional menu photographs for your restaurant using AI. Upload your dishes, customize the style, and download ready-to-print images.",
 };

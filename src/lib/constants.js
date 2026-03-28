@@ -1,7 +1,7 @@
-import { 
-  Sun, Sunset, SunDim, Cloud, Moon, Lightbulb, 
+import {
+  Sun, Sunset, SunDim, Cloud, Moon, Lightbulb,
   ArrowDown, ArrowDownRight, ArrowRight,
-  Square, RectangleVertical, RectangleHorizontal, Smartphone, Tv, Camera 
+  Square, RectangleVertical, RectangleHorizontal, Smartphone, Tv, Camera
 } from 'lucide-react';
 
 export const ASPECT_RATIO_OPTIONS = [
