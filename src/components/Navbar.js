@@ -3,8 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { SignInButton, UserButton } from '@clerk/nextjs'
-import { useConvexAuth } from 'convex/react'
+
 import { Sparkles, User, Menu, X, Home } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import logo from '@/assets/platedai_logo.png'
@@ -37,16 +36,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
-  const { isAuthenticated, isLoading } = useConvexAuth()
-  const lastAuthRef = useRef(null)
 
-  if (!isLoading) {
-    lastAuthRef.current = isAuthenticated
-  }
-
-  const showAuthenticated = isLoading ? lastAuthRef.current === true : isAuthenticated
-  const showUnauthenticated = isLoading ? lastAuthRef.current === false : !isAuthenticated
-  const showSkeleton = isLoading && lastAuthRef.current === null
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -86,27 +76,7 @@ export default function Navbar() {
           </div>
 
           <div className="pill-navbar__right">
-            {showSkeleton && (
-              <div className="pill-navbar__avatar-skeleton" />
-            )}
 
-            {showAuthenticated && (
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: 'pill-navbar__avatar',
-                  },
-                }}
-              />
-            )}
-
-            {showUnauthenticated && (
-              <SignInButton mode="modal">
-                <button type="button" className="pill-navbar__cta">
-                  Sign In
-                </button>
-              </SignInButton>
-            )}
 
             <button
               className="pill-navbar__hamburger"
@@ -146,15 +116,7 @@ export default function Navbar() {
               )
             })}
 
-            <div className="pill-mobile-auth">
-              {showUnauthenticated && (
-                <SignInButton mode="modal">
-                  <button type="button" className="pill-navbar__cta pill-navbar__cta--mobile">
-                    Sign In
-                  </button>
-                </SignInButton>
-              )}
-            </div>
+
           </div>
         </div>
       )}

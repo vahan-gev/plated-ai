@@ -12,20 +12,24 @@ import {
   COLOR_GRADE_OPTIONS,
   SHOT_ANGLE_OPTIONS,
   SURFACE_IMAGE_LIST,
+  ASPECT_RATIO_OPTIONS,
 } from '@/lib/constants'
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { useDeviceId } from '@/hooks/useDeviceId'
 
-const STEPS = ['Name', 'Lighting', 'Color Grade', 'Surface', 'Shot Angle']
+const STEPS = ['Name', 'Aspect Ratio', 'Lighting', 'Color Grade', 'Surface', 'Shot Angle']
 
 export default function NewGroupPage() {
+  const deviceId = useDeviceId()
   const router = useRouter()
   const createGroup = useMutation(api.groups.create)
 
   const [step, setStep] = useState(0)
   const [data, setData] = useState({
     name: '',
+    aspectRatio: '1:1',
     lighting: '',
     colorGrade: '',
     surfaceImage: '',
@@ -36,10 +40,11 @@ export default function NewGroupPage() {
   const canProceed = () => {
     switch (step) {
       case 0: return data.name.trim().length > 0
-      case 1: return data.lighting !== ''
-      case 2: return data.colorGrade !== ''
-      case 3: return data.surfaceImage !== ''
-      case 4: return data.shotAngle !== ''
+      case 1: return data.aspectRatio !== ''
+      case 2: return data.lighting !== ''
+      case 3: return data.colorGrade !== ''
+      case 4: return data.surfaceImage !== ''
+      case 5: return data.shotAngle !== ''
       default: return false
     }
   }
@@ -51,7 +56,9 @@ export default function NewGroupPage() {
       setIsCreating(true)
       try {
         const groupId = await createGroup({
+          deviceId,
           name: data.name.trim(),
+          aspectRatio: data.aspectRatio,
           lighting: data.lighting,
           colorGrade: data.colorGrade,
           shotAngle: data.shotAngle,
@@ -103,7 +110,7 @@ export default function NewGroupPage() {
                   value={data.name}
                   onChange={(e) => setData({ ...data, name: e.target.value })}
                   placeholder="e.g. Spring Dinner Menu"
-                  className="w-full px-5 py-4 bg-white border border-border rounded-xl text-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#215E61] focus:ring-2 focus:ring-[#215E61]/20 transition-all shadow-sm"
+                  className="w-full px-5 py-4 bg-white border border-border rounded-full text-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#215E61] focus:ring-2 focus:ring-[#215E61]/20 transition-all shadow-sm"
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && canProceed() && handleNext()}
                 />
@@ -111,6 +118,35 @@ export default function NewGroupPage() {
             )}
 
             {step === 1 && (
+              <div>
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold mb-2">Choose Aspect Ratio</h2>
+                  <p className="text-muted-foreground">
+                    Select the dimensions for your generated images.
+                  </p>
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                  {ASPECT_RATIO_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setData({ ...data, aspectRatio: opt.value })}
+                      className={`option-card p-5 rounded-xl border text-left transition-all flex items-start gap-4 ${data.aspectRatio === opt.value ? 'selected' : 'border-border'
+                        }`}
+                    >
+                      <div className="mt-1 text-[#215E61]">
+                        <opt.icon className="w-8 h-8" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">{opt.label}</h4>
+                        <p className="text-sm text-muted-foreground">{opt.description}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl font-bold mb-2">Choose Lighting</h2>
@@ -123,11 +159,12 @@ export default function NewGroupPage() {
                     <button
                       key={opt.value}
                       onClick={() => setData({ ...data, lighting: opt.value })}
-                      className={`option-card p-5 rounded-xl border text-left transition-all ${
-                        data.lighting === opt.value ? 'selected' : 'border-border'
-                      }`}
+                      className={`option-card p-5 rounded-xl border text-left transition-all ${data.lighting === opt.value ? 'selected' : 'border-border'
+                        }`}
                     >
-                      <span className="text-2xl mb-3 block">{opt.icon}</span>
+                      <div className="mb-3 text-[#215E61]">
+                        <opt.icon className="w-8 h-8" strokeWidth={1.5} />
+                      </div>
                       <h4 className="font-semibold mb-1">{opt.label}</h4>
                       <p className="text-sm text-muted-foreground">{opt.description}</p>
                     </button>
@@ -136,7 +173,7 @@ export default function NewGroupPage() {
               </div>
             )}
 
-            {step === 2 && (
+            {step === 3 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl font-bold mb-2">Choose Color Grade</h2>
@@ -149,9 +186,8 @@ export default function NewGroupPage() {
                     <button
                       key={opt.value}
                       onClick={() => setData({ ...data, colorGrade: opt.value })}
-                      className={`option-card p-5 rounded-xl border text-left transition-all ${
-                        data.colorGrade === opt.value ? 'selected' : 'border-border'
-                      }`}
+                      className={`option-card p-5 rounded-xl border text-left transition-all ${data.colorGrade === opt.value ? 'selected' : 'border-border'
+                        }`}
                     >
                       <h4 className="font-semibold mb-1">{opt.label}</h4>
                       <p className="text-sm text-muted-foreground">{opt.description}</p>
@@ -161,7 +197,7 @@ export default function NewGroupPage() {
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl font-bold mb-2">Choose Surface</h2>
@@ -174,9 +210,8 @@ export default function NewGroupPage() {
                     <button
                       key={name}
                       onClick={() => setData({ ...data, surfaceImage: name })}
-                      className={`option-card rounded-xl overflow-hidden border aspect-square relative ${
-                        data.surfaceImage === name ? 'selected ring-2 ring-[#215E61]' : 'border-border'
-                      }`}
+                      className={`option-card rounded-xl overflow-hidden border aspect-square relative ${data.surfaceImage === name ? 'selected ring-2 ring-[#215E61]' : 'border-border'
+                        }`}
                     >
                       <Image
                         src={`/assets/tablecloths/${name}.jpeg`}
@@ -196,7 +231,7 @@ export default function NewGroupPage() {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 5 && (
               <div>
                 <div className="text-center mb-8">
                   <h2 className="text-2xl font-bold mb-2">Choose Shot Angle</h2>
@@ -209,11 +244,12 @@ export default function NewGroupPage() {
                     <button
                       key={opt.value}
                       onClick={() => setData({ ...data, shotAngle: opt.value })}
-                      className={`option-card p-6 rounded-xl border text-center transition-all ${
-                        data.shotAngle === opt.value ? 'selected' : 'border-border'
-                      }`}
+                      className={`option-card p-6 rounded-xl border text-center transition-all ${data.shotAngle === opt.value ? 'selected' : 'border-border'
+                        }`}
                     >
-                      <span className="text-4xl mb-3 block">{opt.icon}</span>
+                      <div className="mb-4 text-[#215E61] flex justify-center">
+                        <opt.icon className="w-10 h-10" strokeWidth={1.5} />
+                      </div>
                       <h4 className="font-semibold mb-1">{opt.label}</h4>
                       <p className="text-sm text-muted-foreground">{opt.description}</p>
                     </button>

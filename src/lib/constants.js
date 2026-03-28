@@ -1,10 +1,25 @@
+import { 
+  Sun, Sunset, SunDim, Cloud, Moon, Lightbulb, 
+  ArrowDown, ArrowDownRight, ArrowRight,
+  Square, RectangleVertical, RectangleHorizontal, Smartphone, Tv, Camera 
+} from 'lucide-react';
+
+export const ASPECT_RATIO_OPTIONS = [
+  { value: "1:1", label: "Square (1:1)", description: "Menus & Grid", icon: Square },
+  { value: "3:4", label: "Portrait (3:4)", description: "Classic vertical", icon: RectangleVertical },
+  { value: "4:3", label: "Landscape (4:3)", description: "Classic horizontal", icon: RectangleHorizontal },
+  { value: "9:16", label: "Stories (9:16)", description: "Reels & TikTok", icon: Smartphone },
+  { value: "16:9", label: "Widescreen (16:9)", description: "Video format", icon: Tv },
+  { value: "3:2", label: "Photo (3:2)", description: "Traditional photo", icon: Camera }
+];
+
 export const LIGHTING_OPTIONS = [
-  { value: "soft_window_light", label: "Soft Window Light", icon: "☀️", description: "Gentle, natural light through a window" },
-  { value: "golden_hour_sunset", label: "Golden Hour", icon: "🌅", description: "Warm, golden sunset tones" },
-  { value: "bright_midday", label: "Bright Midday", icon: "🔆", description: "Crisp, bright overhead light" },
-  { value: "overcast_diffused", label: "Overcast / Diffused", icon: "☁️", description: "Soft, even diffused light" },
-  { value: "moody_low_light", label: "Moody / Low Light", icon: "🌙", description: "Dark, dramatic atmosphere" },
-  { value: "neon_ambient", label: "Neon / Ambient", icon: "💡", description: "Colorful ambient neon glow" },
+  { value: "soft_window_light", label: "Soft Window Light", icon: Sun, description: "Gentle, natural light through a window" },
+  { value: "golden_hour_sunset", label: "Golden Hour", icon: Sunset, description: "Warm, golden sunset tones" },
+  { value: "bright_midday", label: "Bright Midday", icon: SunDim, description: "Crisp, bright overhead light" },
+  { value: "overcast_diffused", label: "Overcast / Diffused", icon: Cloud, description: "Soft, even diffused light" },
+  { value: "moody_low_light", label: "Moody / Low Light", icon: Moon, description: "Dark, dramatic atmosphere" },
+  { value: "neon_ambient", label: "Neon / Ambient", icon: Lightbulb, description: "Colorful ambient neon glow" },
 ];
 
 export const COLOR_GRADE_OPTIONS = [
@@ -17,9 +32,9 @@ export const COLOR_GRADE_OPTIONS = [
 ];
 
 export const SHOT_ANGLE_OPTIONS = [
-  { value: "flat_lay_90", label: "Flat Lay (90°)", description: "Directly above, top-down view", icon: "⬇️", promptDescription: "Camera positioned directly overhead, shooting straight down at 90 degrees. The dish is seen completely from above, no sides of the vessel are visible, the entire frame is filled with the surface and the food from a bird's eye view." },
-  { value: "45_degree", label: "45° Angle", description: "Natural dining perspective", icon: "↘️", promptDescription: "Camera positioned at a roughly 45-degree angle above the dish, halfway between overhead and eye level. The top of the food is clearly visible, the front face of the vessel is partially visible, and a moderate amount of the surface beneath is shown. The most natural and common food photography angle." },
-  { value: "eye_level_0", label: "Eye Level (0°)", description: "Straight-on, level view", icon: "➡️", promptDescription: "Camera positioned at the same height as the middle of the dish, shooting straight forward horizontally, as if the viewer is sitting at the table looking directly at the food. The top of the dish is visible but the surface beneath is minimal or not visible at all." },
+  { value: "flat_lay_90", label: "Flat Lay (90°)", description: "Directly above, top-down view", icon: ArrowDown, promptDescription: "Camera positioned directly overhead, shooting straight down at 90 degrees. The dish is seen completely from above, no sides of the vessel are visible, the entire frame is filled with the surface and the food from a bird's eye view." },
+  { value: "45_degree", label: "45° Angle", description: "Natural dining perspective", icon: ArrowDownRight, promptDescription: "Camera positioned at a roughly 45-degree angle above the dish, halfway between overhead and eye level. The top of the food is clearly visible, the front face of the vessel is partially visible, and a moderate amount of the surface beneath is shown. The most natural and common food photography angle." },
+  { value: "eye_level_0", label: "Eye Level (0°)", description: "Straight-on, level view", icon: ArrowRight, promptDescription: "Camera positioned at the same height as the middle of the dish, shooting straight forward horizontally, as if the viewer is sitting at the table looking directly at the food. The top of the dish is visible but the surface beneath is minimal or not visible at all." },
 ];
 
 export const VESSEL_OPTIONS = [
@@ -142,10 +157,11 @@ export const DECOR_CATEGORIES = [
   },
 ];
 
-export function buildPrompt({ lighting, colorGrade, shotAngle, vesselImage, surfaceImage, cutleryPieces, cutleryStyleImage, decor, customNote }) {
+export function buildPrompt({ lighting, colorGrade, shotAngle, vesselImage, surfaceImage, cutleryPieces, cutleryStyleImage, decor, customNote, aspectRatio }) {
   const lightingLabel = LIGHTING_OPTIONS.find(o => o.value === lighting)?.label || lighting;
   const colorGradeLabel = COLOR_GRADE_OPTIONS.find(o => o.value === colorGrade)?.label || colorGrade;
   const shotAngleLabel = SHOT_ANGLE_OPTIONS.find(o => o.value === shotAngle)?.promptDescription || shotAngle;
+  const aspectLabel = ASPECT_RATIO_OPTIONS.find(o => o.value === (aspectRatio || '1:1'))?.label || aspectRatio || '1:1';
 
   let cutlerySection = "";
   if (cutleryPieces && cutleryPieces.length > 0) {
@@ -176,5 +192,5 @@ Shot angle: ${shotAngleLabel}.
 Lighting: ${lightingLabel}.
 Color grade: ${colorGradeLabel}.
 ${customNoteSection}
-Rules: the dish is the clear focal point. Match the vessel, surface, cutlery, and decor as closely as possible to the attached reference images for each. Background must be simple and non-distracting. Soft background bokeh, sharp focus on the dish. No text, watermarks, or borders. Do not add ingredients or garnishes not visible in the dish reference image. Output a single square photorealistic menu photograph.`.trim();
+Rules: the dish is the clear focal point. Match the vessel, surface, cutlery, and decor as closely as possible to the attached reference images for each. Background must be simple and non-distracting. Soft background bokeh, sharp focus on the dish. No text, watermarks, or borders. Do not add ingredients or garnishes not visible in the dish reference image. Output a single photorealistic menu photograph with an aspect ratio of ${aspectLabel}.`.trim();
 }

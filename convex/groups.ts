@@ -3,22 +3,31 @@ import { v } from "convex/values";
 
 export const create = mutation({
   args: {
+    deviceId: v.string(),
     name: v.string(),
     lighting: v.string(),
     colorGrade: v.string(),
     shotAngle: v.string(),
     surfaceImage: v.string(),
+    aspectRatio: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const user = await ctx.db
+    let user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_device_id", (q) => q.eq("deviceId", args.deviceId))
       .first();
 
-    if (!user) throw new Error("User not found");
+    if (!user) {
+      const userId = await ctx.db.insert("users", {
+        deviceId: args.deviceId,
+        displayName: "Guest",
+        plan: "free",
+        createdAt: Date.now(),
+      });
+      user = await ctx.db.get(userId);
+    }
+    
+    if (!user) throw new Error("Could not create user");
 
     return await ctx.db.insert("groups", {
       userId: user._id,
@@ -27,6 +36,7 @@ export const create = mutation({
       colorGrade: args.colorGrade,
       shotAngle: args.shotAngle,
       surfaceImage: args.surfaceImage,
+      aspectRatio: args.aspectRatio,
       status: "draft",
       createdAt: Date.now(),
     });
@@ -41,14 +51,13 @@ export const getById = query({
 });
 
 export const listForUser = query({
-  args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+  args: { deviceId: v.string() },
+  handler: async (ctx, args) => {
+    if (!args.deviceId) return [];
 
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .withIndex("by_device_id", (q) => q.eq("deviceId", args.deviceId))
       .first();
 
     if (!user) return [];
@@ -96,6 +105,7 @@ export const update = mutation({
     colorGrade: v.optional(v.string()),
     shotAngle: v.optional(v.string()),
     surfaceImage: v.optional(v.string()),
+    aspectRatio: v.optional(v.string()),
     status: v.optional(
       v.union(
         v.literal("draft"),

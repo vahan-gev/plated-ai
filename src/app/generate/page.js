@@ -3,61 +3,35 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useConvexAuth, useQuery, useMutation } from 'convex/react'
-import { SignInButton } from '@clerk/nextjs'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import Navbar from '@/components/Navbar'
 import { Plus, FolderOpen, Sparkles, Clock, CheckCircle2, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useDeviceId } from '@/hooks/useDeviceId'
 
 export default function GeneratePage() {
-  const { isAuthenticated, isLoading } = useConvexAuth()
+  const deviceId = useDeviceId()
   const router = useRouter()
   const getOrCreateUser = useMutation(api.users.getOrCreateUser)
+  
   const groups = useQuery(
     api.groups.listForUser,
-    isAuthenticated ? {} : 'skip'
+    deviceId ? { deviceId } : 'skip'
   )
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getOrCreateUser()
+    if (deviceId) {
+      getOrCreateUser({ deviceId })
     }
-  }, [isAuthenticated, getOrCreateUser])
+  }, [deviceId, getOrCreateUser])
 
-  if (isLoading) {
+  if (!deviceId) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex items-center justify-center pt-32">
           <Loader2 className="w-8 h-8 text-[#215E61] animate-spin" />
-        </div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="flex flex-col items-center justify-center pt-32 px-4">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-2xl bg-[#215E61]/10 flex items-center justify-center text-[#215E61] mx-auto mb-6">
-              <Sparkles className="w-8 h-8" />
-            </div>
-            <h1 className="text-2xl font-bold mb-3">Sign In to Start Generating</h1>
-            <p className="text-muted-foreground mb-8">
-              Create professional menu photographs with AI. Sign in to get started.
-            </p>
-            <SignInButton mode="modal">
-              <button
-                type="button"
-                className="rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-md shadow-[#215E61]/18 transition-all hover:bg-[#1d5458]"
-              >
-                Sign In
-              </button>
-            </SignInButton>
-          </div>
         </div>
       </div>
     )

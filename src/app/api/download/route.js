@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server'
 import JSZip from 'jszip'
 import { ConvexHttpClient } from 'convex/browser'
-import { auth } from '@clerk/nextjs/server'
 import { api } from '../../../../convex/_generated/api'
 
 export async function GET(request) {
   try {
     const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL)
-    const { getToken } = await auth()
-    const token = await getToken({ template: 'convex' })
-    if (token) convex.setAuth(token)
 
     const { searchParams } = new URL(request.url)
     const groupId = searchParams.get('groupId')

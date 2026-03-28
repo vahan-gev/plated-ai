@@ -3,13 +3,13 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    clerkId: v.string(),
+    deviceId: v.optional(v.string()),
     displayName: v.string(),
     email: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     plan: v.union(v.literal("free"), v.literal("pro")),
     createdAt: v.number(),
-  }).index("by_clerk_id", ["clerkId"]),
+  }).index("by_device_id", ["deviceId"]),
 
   groups: defineTable({
     userId: v.id("users"),
@@ -18,6 +18,7 @@ export default defineSchema({
     colorGrade: v.string(),
     shotAngle: v.string(),
     surfaceImage: v.string(),
+    aspectRatio: v.optional(v.string()),
     status: v.union(
       v.literal("draft"),
       v.literal("generating"),

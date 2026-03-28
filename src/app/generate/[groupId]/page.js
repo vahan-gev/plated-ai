@@ -12,7 +12,7 @@ import {
   LIGHTING_OPTIONS,
   COLOR_GRADE_OPTIONS,
   SHOT_ANGLE_OPTIONS,
-  buildPrompt,
+  ASPECT_RATIO_OPTIONS,
 } from '@/lib/constants'
 import {
   Upload,
@@ -116,21 +116,7 @@ export default function GroupPage({ params }) {
       return
     }
 
-    const firstDish = configuredDishes[0]
-    const prompt = buildPrompt({
-      lighting: group.lighting,
-      colorGrade: group.colorGrade,
-      shotAngle: group.shotAngle,
-      vesselImage: firstDish.vesselImage,
-      surfaceImage: group.surfaceImage,
-      cutleryPieces: firstDish.hasCutlery ? firstDish.cutleryPieces : null,
-      cutleryStyleImage: firstDish.hasCutlery ? firstDish.cutleryStyleImage : null,
-      decor: firstDish.decor,
-      customNote: firstDish.customNote,
-    })
-
     setPromptPreview({
-      prompt,
       dishCount: configuredDishes.length,
       dishes: configuredDishes,
     })
@@ -237,6 +223,7 @@ export default function GroupPage({ params }) {
   const lightLabel = LIGHTING_OPTIONS.find(o => o.value === group.lighting)?.label
   const colorLabel = COLOR_GRADE_OPTIONS.find(o => o.value === group.colorGrade)?.label
   const angleLabel = SHOT_ANGLE_OPTIONS.find(o => o.value === group.shotAngle)?.label
+  const aspectLabel = ASPECT_RATIO_OPTIONS.find(o => o.value === (group.aspectRatio || '1:1'))?.label
   const completedDishes = dishes?.filter(d => d.status === 'complete') || []
   const unconfiguredCount = dishes?.filter(d => d.status === 'pending').length || 0
   const configuredCount = dishes?.filter(d => d.status === 'configured').length || 0
@@ -271,6 +258,7 @@ export default function GroupPage({ params }) {
               <span className="px-3 py-1 rounded-full bg-muted text-foreground">{lightLabel}</span>
               <span className="px-3 py-1 rounded-full bg-muted text-foreground">{colorLabel}</span>
               <span className="px-3 py-1 rounded-full bg-muted text-foreground">{angleLabel}</span>
+              <span className="px-3 py-1 rounded-full bg-muted text-foreground">{aspectLabel}</span>
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -584,15 +572,15 @@ export default function GroupPage({ params }) {
             onClick={() => setPromptPreview(null)}
           />
           <motion.div
-            className="relative w-full max-w-2xl max-h-[85vh] bg-white border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            className="relative w-full max-w-sm bg-white border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="flex items-center justify-between p-5 border-b border-border shrink-0">
               <div>
-                <h3 className="text-lg font-semibold">Confirm Generation</h3>
+                <h3 className="text-lg font-semibold">Ready to Generate?</h3>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {promptPreview.dishCount} dish{promptPreview.dishCount > 1 ? 'es' : ''} will be generated
+                  About to generate {promptPreview.dishCount} image{promptPreview.dishCount > 1 ? 's' : ''}
                 </p>
               </div>
               <button
@@ -604,36 +592,21 @@ export default function GroupPage({ params }) {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-[#215E61] mb-2">Prompt (Dish 1 sample)</h4>
-                <div className="p-4 rounded-xl bg-muted border border-stone-300 font-mono text-xs text-foreground whitespace-pre-wrap leading-relaxed max-h-[50vh] overflow-y-auto">
-                  {promptPreview.prompt}
-                </div>
-              </div>
-
-              <div className="text-xs text-muted-foreground">
-                <p>• Each dish will receive a customized version of this prompt based on its individual configuration.</p>
-                <p>• Reference images (dish photo, vessel, surface, cutlery) will be attached as inline images.</p>
-                <p>• Model: <span className="text-muted-foreground">gemini-3.1-flash-image-preview</span></p>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center justify-end gap-2 border-t border-border p-5">
+            <div className="flex shrink-0 items-center justify-end gap-2 p-5 bg-muted/30">
               <button
                 type="button"
                 onClick={() => setPromptPreview(null)}
-                className="inline-flex items-center justify-center rounded-full border border-border bg-white px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-stone-300 hover:text-foreground"
+                className="inline-flex items-center justify-center rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:border-stone-300 hover:text-foreground"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmGenerate}
-                className="btn-primary-action inline-flex items-center gap-1.5 rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-[#215E61]/18 transition-all hover:bg-[#1d5458]"
+                className="btn-primary-action inline-flex items-center gap-2 rounded-full bg-[#215E61] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-[#215E61]/18 transition-all hover:bg-[#1d5458]"
               >
-                <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                Confirm & Generate
+                <Sparkles className="h-4 w-4 shrink-0" />
+                Confirm
               </button>
             </div>
           </motion.div>

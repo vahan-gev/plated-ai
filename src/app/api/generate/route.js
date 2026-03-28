@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 import { ConvexHttpClient } from 'convex/browser'
-import { auth } from '@clerk/nextjs/server'
 import { api } from '../../../../convex/_generated/api'
 import { buildPrompt } from '@/lib/constants'
 
@@ -10,11 +9,6 @@ export async function POST(request) {
     const { dishId, groupId } = await request.json()
 
     const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL)
-    const { getToken } = await auth()
-    const token = await getToken({ template: 'convex' })
-    if (token) {
-      convex.setAuth(token)
-    }
 
     if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'REPLACE_ME_WITH_YOUR_GEMINI_API_KEY') {
       return NextResponse.json(
@@ -48,6 +42,7 @@ export async function POST(request) {
       cutleryStyleImage: dish.hasCutlery ? dish.cutleryStyleImage : null,
       decor: dish.decor,
       customNote: dish.customNote,
+      aspectRatio: group.aspectRatio,
     })
 
     const parts = [{ text: prompt }]
@@ -115,6 +110,7 @@ export async function POST(request) {
       contents: [{ role: 'user', parts }],
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
+        aspectRatio: group.aspectRatio || "1:1",
       },
     })
 

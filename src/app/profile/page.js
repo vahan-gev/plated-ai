@@ -3,27 +3,26 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useConvexAuth, useQuery, useMutation } from 'convex/react'
-import { useUser, SignInButton } from '@clerk/nextjs'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import Navbar from '@/components/Navbar'
-import { User, Mail, Crown, FolderOpen, Clock, CheckCircle2, Loader2, Sparkles, ExternalLink } from 'lucide-react'
+import { Crown, FolderOpen, Clock, CheckCircle2, Loader2, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useDeviceId } from '@/hooks/useDeviceId'
 
 export default function ProfilePage() {
-  const { isAuthenticated, isLoading } = useConvexAuth()
-  const { user: clerkUser } = useUser()
+  const deviceId = useDeviceId()
   const getOrCreateUser = useMutation(api.users.getOrCreateUser)
-  const convexUser = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : 'skip')
-  const groups = useQuery(api.groups.listForUser, isAuthenticated ? {} : 'skip')
+  const convexUser = useQuery(api.users.getCurrentUser, deviceId ? { deviceId } : 'skip')
+  const groups = useQuery(api.groups.listForUser, deviceId ? { deviceId } : 'skip')
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getOrCreateUser()
+    if (deviceId) {
+      getOrCreateUser({ deviceId })
     }
-  }, [isAuthenticated, getOrCreateUser])
+  }, [deviceId, getOrCreateUser])
 
-  if (isLoading) {
+  if (!deviceId || !convexUser) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -34,30 +33,8 @@ export default function ProfilePage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="flex flex-col items-center justify-center px-4 pt-32 text-center">
-          <User className="mb-4 h-12 w-12 text-muted-foreground" />
-          <h1 className="mb-3 text-2xl font-bold">Sign In to View Profile</h1>
-          <p className="mb-6 text-muted-foreground">Access your profile and manage your projects.</p>
-          <SignInButton mode="modal">
-            <button
-              type="button"
-              className="rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-md shadow-[#215E61]/18 transition-all hover:bg-[#1d5458]"
-            >
-              Sign In
-            </button>
-          </SignInButton>
-        </div>
-      </div>
-    )
-  }
-
   const totalDishes = groups?.reduce((acc, g) => acc + g.dishCount, 0) || 0
   const completedGroups = groups?.filter(g => g.status === 'complete').length || 0
-  const isFree = convexUser?.plan === 'free'
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,30 +46,16 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex gap-4 sm:gap-6">
-            <div className="h-20 w-20 shrink-0 rounded-2xl bg-gradient-to-br from-[#215E61] to-[#233D4D] text-2xl font-bold text-white shadow-md shadow-[#215E61]/18 flex items-center justify-center overflow-hidden">
-              {clerkUser?.imageUrl ? (
-                <img
-                  src={clerkUser.imageUrl}
-                  alt="Avatar"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                convexUser?.displayName?.[0]?.toUpperCase() || '?'
-              )}
+            <div className="h-20 w-20 shrink-0 rounded-2xl bg-linear-to-br from-[#215E61] to-[#233D4D] text-2xl font-bold text-white shadow-md shadow-[#215E61]/18 flex items-center justify-center overflow-hidden">
+              {convexUser?.displayName?.[0]?.toUpperCase() || '?'}
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <h1 className="truncate text-2xl font-bold">
-                    {convexUser?.displayName || clerkUser?.fullName || 'User'}
+                    {convexUser?.displayName || 'User'}
                   </h1>
-                  <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4 shrink-0" />
-                    <span className="truncate">
-                      {convexUser?.email || clerkUser?.primaryEmailAddress?.emailAddress}
-                    </span>
-                  </div>
                   <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#215E61]/25 bg-[#215E61]/10 px-3 py-1">
                     <Crown className="h-3.5 w-3.5 text-[#215E61]" />
                     <span className="text-xs font-medium capitalize text-[#215E61]">
@@ -100,15 +63,6 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 </div>
-
-                {isFree && (
-                    <button
-                      type="button"
-                      className="w-full rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-[#1d5458] sm:w-auto"
-                    >
-                      Upgrade to PRO
-                    </button>
-                )}
               </div>
             </div>
           </div>
@@ -144,7 +98,7 @@ export default function ProfilePage() {
           {groups === undefined ? (
             <div className="space-y-3">
               {[1, 2].map(i => (
-                <div key={i} className="h-[4.5rem] rounded-xl border border-border bg-muted shimmer" />
+                <div key={i} className="h-18 rounded-xl border border-border bg-muted shimmer" />
               ))}
             </div>
           ) : groups.length === 0 ? (

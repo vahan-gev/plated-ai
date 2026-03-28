@@ -154,7 +154,7 @@ export default function DishConfigurator({ dish, onClose }) {
                       <button
                         key={img.value}
                         onClick={() => setData({ ...data, vesselImage: img.value })}
-                        className={`option-card relative aspect-square overflow-hidden rounded-full border ${
+                        className={`option-card relative aspect-square overflow-hidden rounded-xl border ${
                           data.vesselImage === img.value ? 'selected ring-2 ring-[#215E61]' : 'border-border'
                         }`}
                       >
@@ -221,7 +221,7 @@ export default function DishConfigurator({ dish, onClose }) {
                           <button
                             key={style.value}
                             onClick={() => setData({ ...data, cutleryStyleImage: style.value })}
-                            className={`option-card relative aspect-square overflow-hidden rounded-full border ${
+                            className={`option-card relative aspect-square overflow-hidden rounded-xl border ${
                               data.cutleryStyleImage === style.value ? 'selected ring-2 ring-[#215E61]' : 'border-border'
                             }`}
                           >
@@ -275,17 +275,17 @@ export default function DishConfigurator({ dish, onClose }) {
 
                   <div className="space-y-2 max-h-[350px] overflow-y-auto pr-1">
                     {DECOR_CATEGORIES.map((cat, ci) => (
-                      <div key={ci} className="overflow-hidden rounded-full border border-border">
+                      <div key={ci} className="overflow-hidden rounded-xl border border-border">
                         <button
                           type="button"
                           onClick={() => setExpandedCategory(expandedCategory === ci ? null : ci)}
-                          className="flex w-full items-center justify-between px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                          className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                         >
                           {cat.name}
                           {expandedCategory === ci ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                         </button>
                         {expandedCategory === ci && (
-                          <div className="px-3 pb-3 flex flex-wrap gap-2">
+                          <div className="px-4 pb-4 pt-1 flex flex-wrap gap-2">
                             {cat.items.map(item => (
                               <button
                                 key={item}

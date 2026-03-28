@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Authenticated, Unauthenticated } from 'convex/react'
-import { SignInButton } from '@clerk/nextjs'
 import Navbar from '@/components/Navbar'
 import HomeHeroCarousel from '@/components/HomeHeroCarousel'
 import HomeShowcaseGallery from '@/components/HomeShowcaseGallery'
@@ -39,37 +37,22 @@ export default function Home() {
           >
             <h1 className="mb-4 text-4xl font-bold leading-[1.1] tracking-tight text-white drop-shadow-sm sm:text-5xl lg:text-5xl">
               Welcome to{' '}
-              <span className="bg-gradient-to-r from-white to-[#b8e0e2] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-white to-[#b8e0e2] bg-clip-text text-transparent">
                 Plated.ai
               </span>
             </h1>
             <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg">
-              Upload a photo of your food, choose your style, and let AI generate stunning
-              professional menu &amp; social media photographs.
+              Create a brand that looks as good as your food tastes
             </p>
             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Authenticated>
-                <Link
-                  href="/generate"
-                  className="group inline-flex items-center gap-1.5 rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-black/20 transition-all hover:bg-[#1d5458] hover:shadow-lg hover:shadow-black/30"
-                >
-                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                  Start Generating
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform" />
-                </Link>
-              </Authenticated>
-              <Unauthenticated>
-                <SignInButton mode="modal">
-                  <button
-                    type="button"
-                    className="group inline-flex items-center gap-1.5 rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-black/25 transition-all hover:scale-[1.02] hover:bg-[#1d5458] hover:shadow-lg"
-                  >
-                    <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                    Start Generating
-                    <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1" />
-                  </button>
-                </SignInButton>
-              </Unauthenticated>
+              <Link
+                href="/generate"
+                className="group inline-flex items-center gap-1.5 rounded-full bg-[#215E61] px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-black/20 transition-all hover:bg-[#1d5458] hover:shadow-lg hover:shadow-black/30"
+              >
+                <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                Start Generating
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1" />
+              </Link>
               <Link
                 href="#how-it-works"
                 scroll={false}
@@ -142,7 +125,7 @@ export default function Home() {
         </div>
       </section>
 
-      <HomeShowcaseGallery pairs={SHOWCASE_PAIRS} />     
+      <HomeShowcaseGallery pairs={SHOWCASE_PAIRS} />
 
       <footer className="border-t border-border py-4 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
