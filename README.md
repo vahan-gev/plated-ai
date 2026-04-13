@@ -8,11 +8,13 @@
 </div>
 
 ## Overview
+
 Plated.ai is an intelligent, AI-driven photography studio built for restaurants, cafes, and artisan creators. Transform simple, everyday food photos into breathtaking, professional-grade menu and social media assets in seconds.
 
 Instead of expensive photoshoots and complex lighting setups, Plated.ai utilizes Google's Gemini generative vision models to seamlessly blend your dish into a highly customizable environment.
 
 ## Features
+
 - **Effortless Generation:** Upload up to 20 raw food photos at once and let AI do the heavy lifting.
 - **Complete Creative Control:** Customize the exact lighting, camera angle, color grading, surface material, and aspect ratio.
 - **Pro Props:** Select plates, bowls, glassware, cutlery styles, and dynamic decorative accents (herbs, drizzles, powders) perfectly tailored to your culinary aesthetic.
@@ -20,6 +22,7 @@ Instead of expensive photoshoots and complex lighting setups, Plated.ai utilizes
 - **Private Workspaces:** Pick up where you left off. Projects save automatically and seamlessly to your unique device ID without requiring an account.
 
 ## Tech Stack
+
 - **Frontend:** Next.js, Tailwind CSS, Framer Motion
 - **Backend/Database:** Convex
 - **Storage:** Convex File Storage
@@ -42,7 +45,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to experience the application.
 
-
 ## Credits
 
-- All the plates, bowls, glasses, cutleries, table cloths, props, etc. are from https://www.crateandbarrel.com/
+- All the plates, bowls, glasses, cutleries, table cloths, props, etc. are generated with Gemini
